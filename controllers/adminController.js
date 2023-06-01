@@ -5,27 +5,27 @@ const  jwt  = require("jsonwebtoken")
 
 
 const createAdmin = async (req, res) => {
-    try {
-      const { name, password, email, role } = req.body;
-      const hashedPassword = await bcrypt.hash(password, 10);
-  
-      const newUser = await prisma.admin.create({
-        data: {
-          name,
-          password: hashedPassword,
-          email,
-          role,
-        },
-      });
-  
-      return res
-        .status(201)
-        .send({ status: true, msg: "Admin Created Successfully", data: newUser });
-    } catch (error) {
-      console.log(error);
-      return res.status(500).send({ status: false, msg: error.message });
-    }
-  };
+  try {
+    const { name, password, email, role } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await prisma.admin.create({
+      data: {
+        name,
+        password: hashedPassword,
+        email,
+        role,
+      }
+    });
+
+    return res
+      .status(201)
+      .send({ status: true, msg: "Admin Created Successfully", data: newUser });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ status: false, msg: error.message });
+  }
+};
 
 // const getAdmin = async (req, res) => {
 //   try {
