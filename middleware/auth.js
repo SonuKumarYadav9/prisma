@@ -7,28 +7,41 @@ const authMiddleware = async (req, res, next) => {
     const { authorization } = req.headers;
 
     if (authorization && authorization.startsWith("Bearer")) {
-      let token = authorization.split(" ")[1];
+      const token = authorization.split(" ")[1];
       const { userID } = jwt.verify(token, process.env.JWT_SECRET);
 
+      let role;
+      let entity;
+
       const admin = await prisma.admin.findUnique({
-        where: { id: userID },
+        where: { id: parseInt(userID, 10) },
         select: { id: true, role: true },
       });
 
       if (admin) {
-        req.user = admin;
-        // console.log(req.user);
-        // console.log(req.user.role);
+        role = admin.role;
+        entity = admin;
+      } else {
+        const user = await prisma.user.findUnique({
+          where: { id: parseInt(userID, 10) },
+          select: { id: true, role: true },
+        });
+
+        if (user) {
+          role = user.role;
+          entity = user;
+        }
+      }
+
+      if (role) {
+        req.user = entity;
+        req.user.role = role;
         next();
       } else {
-        return res
-          .status(401)
-          .send({ msg: "Unauthorized user or Token is missing" });
+        return res.status(401).send({ msg: "Unauthorized user or Token is missing" });
       }
     } else {
-      return res
-        .status(401)
-        .send({ msg: "Unauthorized user or Token is missing" });
+      return res.status(401).send({ msg: "Unauthorized user or Token is missing" });
     }
   } catch (error) {
     console.log(error);
@@ -37,3 +50,5 @@ const authMiddleware = async (req, res, next) => {
 };
 
 module.exports = { authMiddleware };
+
+

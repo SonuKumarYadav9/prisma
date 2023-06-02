@@ -46,6 +46,28 @@ const createAdmin = async (req, res) => {
 //   }
 // };
 
+const findAdmin = async (req, res) => {
+  try {
+    const adminId = parseInt(req.params.id, 10);
+
+
+    const admin = await prisma.admin.findUnique({
+      where: { id: adminId },
+    });
+
+    if (admin) {
+      // Admin found
+      res.json(admin);
+    } else {
+      // Admin not found
+      res.status(404).json({ error: "Admin not found" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Failed to find admin" });
+  }
+};
+
 const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -90,4 +112,5 @@ const adminLogin = async (req, res) => {
 module.exports = {
     createAdmin,
     adminLogin,
+    findAdmin
   };
