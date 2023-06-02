@@ -55,6 +55,8 @@ datasource db {
 //   role     String @db.VarChar(15)
 // }
 
+
+ 
 model Admin {
   id       Int      @id @default(autoincrement())
   name     String
@@ -74,5 +76,4 @@ model User {
   admin     Admin?   @relation(fields: [parentId], references: [id])
   
 }
-
 

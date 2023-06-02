@@ -120,3 +120,4 @@ const deleteUser = async (req, res) => {
 module.exports = {
   createUser,updateUser,getUser,deleteUser
 };
+
