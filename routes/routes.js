@@ -1,5 +1,21 @@
 const express = require("express")
 
+// const multer = require('multer');
+
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'uploads/'); // Specify the destination folder to save the uploaded files
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, Date.now() + '-' + file.originalname); // Generate a unique filename
+//   },
+// });
+
+// const upload = multer({ storage });
+
+// const multer = require('multer');
+// const upload = multer({ dest: 'uploads/' }); 
+
 
 
 const router = express.Router()
@@ -11,7 +27,7 @@ const {authMiddleware}=require("../middleware/auth")
 
 
 // Create a new admin
-router.post("/register", createAdmin);
+router.post('/admin-register', createAdmin);
 router.get("/admin/:id",findAdmin);
 
 
