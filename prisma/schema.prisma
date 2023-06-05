@@ -5,7 +5,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
@@ -58,23 +57,22 @@ datasource db {
 
  
 model Admin {
-  id            Int      @id @default(autoincrement())
+  id            String   @id @default(uuid()) @db.VarChar(36)
   name          String
   email         String   @unique
   password      String
   role          String   @default("admin")
-  profileImage  String?  // New field for profile image
+  profileImage  String?
   users         User[]
 }
-model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  role      String   @default("retailer") // Default role is set to "retailer"
-  parentId  Int?
-  profileImage  String?
-  admin     Admin?   @relation(fields: [parentId], references: [id])
-  
-}
 
+model User {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  password      String
+  role          String   @default("retailer")
+  parentId      String?
+  profileImage  String?
+  admin         Admin?   @relation(fields: [parentId], references: [id])
+}

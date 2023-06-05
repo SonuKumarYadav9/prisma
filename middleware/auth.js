@@ -14,7 +14,7 @@ const authMiddleware = async (req, res, next) => {
       let entity;
 
       const admin = await prisma.admin.findUnique({
-        where: { id: parseInt(userID, 10) },
+        where: { id: userID },
         select: { id: true, role: true },
       });
 
@@ -23,7 +23,7 @@ const authMiddleware = async (req, res, next) => {
         entity = admin;
       } else {
         const user = await prisma.user.findUnique({
-          where: { id: parseInt(userID, 10) },
+          where: { id: userID },
           select: { id: true, role: true },
         });
 
@@ -50,5 +50,3 @@ const authMiddleware = async (req, res, next) => {
 };
 
 module.exports = { authMiddleware };
-
-

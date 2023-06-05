@@ -2,37 +2,34 @@ const bcrypt = require("bcrypt");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const jwt = require("jsonwebtoken");
+const { v4: uuidv4 } = require("uuid"); // Import the UUID generator
 const { uploadFile } = require("../aws/awsS3");
 
 const createAdmin = async (req, res) => {
   try {
     const { name, password, email, role } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
-    const image = req.files[0]; // Assuming you are using multer for file uploads
+    const image = req.files[0];
 
-    // Check if a file is uploaded
     if (image) {
-      // Add the imageUrl to the create data
       const newUser = await prisma.admin.create({
         data: {
+          id: uuidv4(),
           name,
           password: hashedPassword,
           email,
           role,
-          profileImage: await uploadFile(image) // Save the image URL in the profileImage field
+          profileImage: await uploadFile(image),
         },
       });
 
-      return res
-        .status(201)
-        .send({ status: true, msg: "Admin Created Successfully", data: newUser });
+      return res.status(201).json({ status: true, msg: "Admin Created Successfully", data: newUser });
     } else {
-      // Handle the case when no image file is uploaded
-      return res.status(400).send({ status: false, msg: "No image file uploaded" });
+      return res.status(400).json({ status: false, msg: "No image file uploaded" });
     }
   } catch (error) {
     console.log(error);
-    return res.status(500).send({ status: false, msg: error.message });
+    return res.status(500).json({ status: false, msg: error.message });
   }
 };
 
@@ -58,8 +55,7 @@ const createAdmin = async (req, res) => {
 
 const findAdmin = async (req, res) => {
   try {
-    const adminId = parseInt(req.params.id, 10);
-
+    const adminId = req.params.id; // Parse the adminId as a string
 
     const admin = await prisma.admin.findUnique({
       where: { id: adminId },
@@ -67,7 +63,7 @@ const findAdmin = async (req, res) => {
 
     if (admin) {
       // Admin found
-      res.status(200).json({status:true,data:admin});
+      res.status(200).json({ status: true, data: admin });
     } else {
       // Admin not found
       res.status(404).json({ error: "Admin not found" });
@@ -77,6 +73,7 @@ const findAdmin = async (req, res) => {
     res.status(500).json({ error: "Failed to find admin" });
   }
 };
+
 
 const adminLogin = async (req, res) => {
   try {

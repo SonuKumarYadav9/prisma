@@ -34,7 +34,7 @@ router.get("/admin/:id",findAdmin);
 //For Users
 router.post("/register/user", authMiddleware,createUser);
 router.put("/user-update/:id", authMiddleware,updateUser);
-router.get("/users",authMiddleware,getUser);
+router.get("/users",getUser);
 router.delete("/user-delete/:id",authMiddleware,deleteUser);
 router.get("/user/:id",authMiddleware,getUserByid);
 
