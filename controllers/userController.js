@@ -1,11 +1,13 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const bcrypt = require("bcrypt");
+const { uploadFile } = require("../aws/awsS3");
 
 const createUser = async (req, res) => {
   try {
     const { name, password, email, role } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
+    const image = req.files[0]; // Assuming you are using multer for file uploads
 
     // Validation and checks go here...
     if (req.user.role !== "admin" && req.user.role !== "master") {
@@ -30,22 +32,35 @@ const createUser = async (req, res) => {
         } else {
           return res.status(401).send({ status: false, msg: "Unauthorized" });
         }
-      } else {
+      } 
+      else if (role === "retailer") {
+        if (req.user.role === "admin" || req.user.role === "master"|| req.user.role === "distributer" ) {
+          parent_id = req.user.id;
+        } else {
+          return res.status(401).send({ status: false, msg: "Unauthorized" });
+        }
+      }else {
         return res.status(400).send({ status: false, msg: "Invalid Role" });
       }
       
-
+      if (image) {
     const newUser = await prisma.user.create({
       data: {
         name,
         password: hashedPassword,
         email,
         role,
-        admin: { connect: { id: parent_id } }
+        admin: { connect: { id: parent_id } },
+        profileImage: await uploadFile(image)
       },
     });
-
     return res.status(201).send({ status: true, msg: "User Created Successfully", data: newUser });
+      }else {
+        // Handle the case when no image file is uploaded
+        return res.status(400).send({ status: false, msg: "No image file uploaded" });
+      }
+
+    
   } catch (error) {
     console.log(error);
     return res.status(500).send({ status: false, msg: error.message });
@@ -75,7 +90,31 @@ const updateUser = async (req, res) => {
       return res.status(500).send({ status: false, msg: error.message });
     }
   };
-
+  const getUserByid = async (req, res) => {
+    try {
+      const id = parseInt(req.params.id, 10);
+  
+      if (isNaN(id)) {
+        // Handle the case where the id is not a valid integer
+        return res.status(400).json({ status: false, msg: "Invalid ID" });
+      }
+  
+      const user = await prisma.user.findUnique({
+        where: {
+          id: id,
+        },
+      });
+  
+      if (!user) {
+        return res.status(404).json({ status: false, msg: "User not found" });
+      }
+  
+      return res.status(200).json({ status: true, msg: "User found", data: user });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ status: false, msg: error.message });
+    }
+  };
 
 
  const getUser = async (req, res) => {
@@ -87,6 +126,7 @@ const updateUser = async (req, res) => {
         email: true,
         role: true,
         parentId: true,
+        profileImage:true,
         admin: true,
       },
     });
@@ -118,6 +158,6 @@ const deleteUser = async (req, res) => {
   
   
 module.exports = {
-  createUser,updateUser,getUser,deleteUser
+  createUser,updateUser,getUser,deleteUser,getUserByid
 };
 

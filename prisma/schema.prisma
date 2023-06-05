@@ -73,6 +73,7 @@ model User {
   password  String
   role      String   @default("retailer") // Default role is set to "retailer"
   parentId  Int?
+  profileImage  String?
   admin     Admin?   @relation(fields: [parentId], references: [id])
   
 }

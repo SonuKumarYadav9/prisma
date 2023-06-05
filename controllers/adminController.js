@@ -36,7 +36,6 @@ const createAdmin = async (req, res) => {
   }
 };
 
-module.exports = { createAdmin };
 
 // const getAdmin = async (req, res) => {
 //   try {
