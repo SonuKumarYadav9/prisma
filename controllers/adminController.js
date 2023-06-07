@@ -34,24 +34,6 @@ const createAdmin = async (req, res) => {
 };
 
 
-// const getAdmin = async (req, res) => {
-//   try {
-//     const adminId = req.params.id;
-//     const admin = await prisma.admin.findUnique({
-//       where: { id: parseInt(adminId) },
-//       select: { password: false },
-//     });
-
-//     if (!admin || admin.role !== "admin") {
-//       return res.status(401).send({ status: false, msg: "UnAuthorised user" });
-//     }
-
-//     return res.status(200).send({ status: true, msg: "Success", data: admin });
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(500).send({ status: false, msg: error.message });
-//   }
-// };
 
 const findAdmin = async (req, res) => {
   try {

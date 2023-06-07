@@ -1,19 +1,20 @@
 const express = require("express");
-const multer = require("multer")
+const multer = require("multer");
+const routes = require('./routes/routes');
+const cors = require('cors');
+
+
+
 const app = express();
 const port = 5000;
 
-const cors = require('cors');
 
-const routes = require('./routes/routes')
 
-app.use(express.json())
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(multer().any())
+app.use(multer().any());
 app.use(cors());
-
-
-app.use('/', routes)
+app.use('/', routes);
 
 
 

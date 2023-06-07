@@ -67,7 +67,6 @@ const createUser = async (req, res) => {
 };
 
 
-
 const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
@@ -130,8 +129,7 @@ const getUserByid = async (req, res) => {
 };
 
 
-
- const getUser = async (req, res) => {
+const getUser = async (req, res) => {
   try {
     const users = await prisma.user.findMany({
       select: {
